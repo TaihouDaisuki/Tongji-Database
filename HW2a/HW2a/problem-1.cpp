@@ -1,0 +1,163 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<string>
+
+#define TRUE 1
+#define FALSE 0
+#define OK 1
+#define ERROR 0
+#define Overflow 2
+
+#define For(i,l,r) for(int i=l;i<=r;++i)
+#define opFor(i,r,l) for(int i=r;i>=l;--i)
+
+using namespace std;
+
+typedef int Status;
+typedef int ElemType;
+
+class Linear_List
+{
+private:
+	typedef struct LNode
+	{
+		ElemType data;
+		LNode *pre;
+		LNode *nxt;
+	} LNode, *LinkList;
+	LinkList L, tail;
+public:
+	/*************/
+	/*common part*/
+	/*************/
+	Linear_List();
+	~Linear_List();
+
+	Status clear();
+	Status empty() const;
+	int length() const;
+
+	Status reverse();
+	Status output() const;
+	Status sp_output() const;
+
+	Status insert(const int, const ElemType);
+};
+
+Linear_List::Linear_List()
+{
+	L = new(nothrow) LNode;
+	if (L == NULL)
+		exit(Overflow);
+	L->pre = L->nxt = NULL;
+	tail = L;
+}
+Linear_List::~Linear_List()
+{
+	LinkList p = L, q;
+	while (p != NULL)
+		q = p->nxt, delete p, p = q;
+	L = tail = NULL;
+}
+
+Status Linear_List::clear()
+{
+	LinkList p = L->nxt, q;
+	while (p != NULL)
+		q = p->nxt, delete p, p = q;
+	L->nxt = L->pre = NULL;
+	tail = L;
+	return OK;
+}
+Status Linear_List::empty() const
+{
+	return tail == NULL;
+}
+int Linear_List::length() const
+{
+	LinkList p = L->nxt;
+	int res = 0;
+	while (p != NULL)
+		++res, p = p->nxt;
+	return res;
+}
+
+Status Linear_List::reverse()
+{
+	if (tail == NULL)
+		return ERROR;
+	LinkList p = L->nxt, q = tail;
+	ElemType tmp;
+	while (p != q && p->pre != q)
+	{
+		tmp = p->data, p->data = q->data, q->data = tmp;
+		p = p->nxt, q = q->pre;
+	}
+	return OK;
+}
+Status Linear_List::output() const
+{
+    if (tail == L)
+        return ERROR;
+    LinkList p = L->nxt;
+    while (p != tail)
+        cout << p->data << " ", p = p->nxt;
+    cout << p->data;
+    return OK;
+}
+Status Linear_List::sp_output() const
+{
+	if (tail == L)
+		return ERROR;
+	LinkList p = L->nxt;
+	while (p != NULL)
+	{
+		if(!(p->data % 3))
+			cout << p->data << " ";
+		p = p->nxt;
+	}
+	return OK;
+}
+
+Status Linear_List::insert(const int i, const ElemType x)
+{
+	LinkList p = L;
+	int pos = 0;
+	while (p != NULL && pos < i - 1)
+		p = p->nxt, ++pos;
+	if (p == NULL || pos > i - 1)	
+		return ERROR;
+	LinkList q = new(nothrow) LNode;
+	if (q == NULL)
+		exit(Overflow);
+	q->data = x;
+	q->pre = p;
+	q->nxt = p->nxt;
+	if (p == tail)
+		tail = q;
+	else
+		p->nxt->pre = q;
+	p->nxt = q;
+	return OK;
+}
+
+int main()
+{
+	Linear_List L;
+	int n;
+	ElemType x;
+	
+	cin>>n;
+	For(i,1,n)
+	{
+		cin>>x;
+		L.insert(1,x);
+	}
+	L.output(); puts("");
+	L.reverse();
+	L.sp_output(); puts("");
+
+	//system("pause");
+	return 0;
+}
